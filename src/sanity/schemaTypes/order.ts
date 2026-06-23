@@ -10,10 +10,7 @@ import {
 
 // Colored status icon shown as the order's thumbnail in the list, so Kami can
 // scan order states at a glance.
-const STATUS_ICON: Record<
-  string,
-  { icon: typeof Zap; color: string }
-> = {
+const STATUS_ICON: Record<string, { icon: typeof Zap; color: string }> = {
   new: { icon: Zap, color: "#FFC000" },
   contacted: { icon: MessageCircle, color: "#3b82f6" },
   in_progress: { icon: Tool, color: "#ec4899" },
@@ -37,11 +34,11 @@ export const order = defineType({
       type: "string",
       options: {
         list: [
-          { title: "🆕 New", value: "new" },
-          { title: "💬 In touch", value: "contacted" },
-          { title: "🧺 In progress", value: "in_progress" },
-          { title: "✅ Completed", value: "completed" },
-          { title: "🗂️ Archived", value: "archived" },
+          { title: "New Order", value: "new" },
+          { title: "In touch", value: "contacted" },
+          { title: "In progress", value: "in_progress" },
+          { title: "Completed", value: "completed" },
+          { title: "Archived", value: "archived" },
         ],
         layout: "radio",
       },
@@ -55,18 +52,79 @@ export const order = defineType({
         "Turn on once payment has been received — tracked separately from the order's status.",
       initialValue: false,
     }),
-    defineField({ name: "name", title: "Customer name", type: "string", readOnly: true }),
-    defineField({ name: "email", title: "Email", type: "string", readOnly: true }),
-    defineField({ name: "phone", title: "Phone", type: "string", readOnly: true }),
-    defineField({ name: "wreath", title: "Inspired by", type: "string", readOnly: true }),
-    defineField({ name: "season", title: "Season / theme", type: "string", readOnly: true }),
-    defineField({ name: "size", title: "Size", type: "string", readOnly: true }),
-    defineField({ name: "colors", title: "Colors / flowers", type: "string", readOnly: true }),
-    defineField({ name: "occasion", title: "In memory of", type: "string", readOnly: true }),
-    defineField({ name: "budget", title: "Budget", type: "string", readOnly: true }),
-    defineField({ name: "dueDate", title: "Needed by", type: "string", readOnly: true }),
-    defineField({ name: "delivery", title: "Delivery method", type: "string", readOnly: true }),
-    defineField({ name: "details", title: "Details", type: "text", rows: 4, readOnly: true }),
+    defineField({
+      name: "name",
+      title: "Customer name",
+      type: "string",
+      readOnly: true,
+    }),
+    defineField({
+      name: "email",
+      title: "Email",
+      type: "string",
+      readOnly: true,
+    }),
+    defineField({
+      name: "phone",
+      title: "Phone",
+      type: "string",
+      readOnly: true,
+    }),
+    defineField({
+      name: "wreath",
+      title: "Inspired by",
+      type: "string",
+      readOnly: true,
+    }),
+    defineField({
+      name: "season",
+      title: "Season / theme",
+      type: "string",
+      readOnly: true,
+    }),
+    defineField({
+      name: "size",
+      title: "Size",
+      type: "string",
+      readOnly: true,
+    }),
+    defineField({
+      name: "colors",
+      title: "Colors / flowers",
+      type: "string",
+      readOnly: true,
+    }),
+    defineField({
+      name: "occasion",
+      title: "In memory of",
+      type: "string",
+      readOnly: true,
+    }),
+    defineField({
+      name: "budget",
+      title: "Budget",
+      type: "string",
+      readOnly: true,
+    }),
+    defineField({
+      name: "dueDate",
+      title: "Needed by",
+      type: "string",
+      readOnly: true,
+    }),
+    defineField({
+      name: "delivery",
+      title: "Delivery method",
+      type: "string",
+      readOnly: true,
+    }),
+    defineField({
+      name: "details",
+      title: "Details",
+      type: "text",
+      rows: 4,
+      readOnly: true,
+    }),
     defineField({
       name: "notes",
       title: "Private notes",
