@@ -1,9 +1,14 @@
 import Link from "next/link";
 import { site } from "@/data/site";
-import { featuredProducts } from "@/data/products";
+import { getFeaturedProducts } from "@/sanity/lib/queries";
 import { WreathCard } from "@/components/WreathCard";
 
-export default function Home() {
+// Re-fetch from Sanity at most once a minute so new wreaths appear without a
+// redeploy (and the page still serves fast from cache).
+export const revalidate = 60;
+
+export default async function Home() {
+  const featuredProducts = await getFeaturedProducts();
   return (
     <>
       {/* ── Hero ─────────────────────────────────────────────────────────── */}

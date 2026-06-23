@@ -6,9 +6,24 @@ A warm, handcrafted website for a custom wreath-making business — built with
 ## What's inside
 
 - **Home** — hero, featured wreaths, "how it works", and a meet-the-maker section.
-- **Gallery** (`/gallery`) — filterable grid of wreaths by season/category.
-- **Order Custom** (`/order`) — a friendly order form that emails Kami.
+- **Gallery** (`/gallery`) — filterable grid of wreaths + gallery photos.
+- **Order Custom** (`/order`) — a friendly order form that emails Kami **and** saves the request into the admin.
 - **Contact** (`/contact`) — email + Facebook.
+- **Studio / Admin** (`/studio`) — a visual CMS (Sanity) where Kami manages wreaths, gallery photos, and order requests. No code, no redeploys.
+
+## The admin (Sanity Studio) — `/studio`
+
+Kami logs in at **`/studio`** to manage the whole site:
+
+- **🌿 Wreaths** — add/edit/delete products. Upload a photo (drag & drop),
+  set name, category, price, and "feature on home page". Changes appear on the
+  live site within ~1 minute (no redeploy).
+- **🖼️ Gallery photos** — standalone photos of past work, with captions.
+- **✉️ Order requests** — every order from the website lands here automatically
+  with a status (New → In touch → In progress → Completed). Private notes too.
+
+Content lives in Sanity, so the site reads from it at runtime and falls back to
+the static list in `src/data/products.ts` if Sanity is ever unreachable.
 
 ## Getting started
 
@@ -18,17 +33,16 @@ npm run dev      # http://localhost:3000
 npm run build    # production build
 ```
 
-## Adding a new wreath (no coding required for the data)
+## Adding a new wreath
 
-Everything lives in [`src/data/products.ts`](src/data/products.ts). To add a wreath:
+**The easy way (recommended):** go to `/studio`, click **🌿 Wreaths → New**,
+upload a photo, fill in the details, and Publish. It appears on the site within
+a minute. No code.
 
-1. Drop a photo into `public/wreaths/` (e.g. `public/wreaths/spring-tulip.jpg`).
-2. Copy an existing entry in `products.ts`, give it a unique `id`, write a name
-   and description, and set `image: "/wreaths/spring-tulip.jpg"`.
-3. Set `featured: true` to also show it on the home page.
-
-That's it — it appears in the gallery and filters automatically. Categories are
-defined at the top of the same file; add new ones freely.
+**The code way (fallback):** the starter list lives in
+[`src/data/products.ts`](src/data/products.ts) and is used only when Sanity is
+empty/unreachable. Copy an entry, give it a unique `id`, and set an `image` path
+under `public/wreaths/`.
 
 ## Editing contact info & copy
 
@@ -43,14 +57,20 @@ ready, drop the image into `public/` (e.g. `public/logo.png`) and follow the
 comment at the top of that file to swap it in. One change updates the header,
 footer, and everywhere else.
 
-## Receiving orders by email
+## Receiving orders
 
-Orders are sent through `src/app/api/order/route.ts`.
+Orders go through `src/app/api/order/route.ts`, which does two things:
 
-- **Without setup:** the form opens the customer's email app pre-filled to Kami —
-  nothing is lost.
-- **Automatic emails:** create a free [Resend](https://resend.com) account and
-  add a `.env.local` file (see `env.example.txt`) with your `RESEND_API_KEY`.
+1. **Saves the order into Sanity** → Kami sees it under **✉️ Order requests** in
+   `/studio` with a status workflow (New → In touch → In progress → Completed).
+2. **Emails Kami** if [Resend](https://resend.com) is configured
+   (`RESEND_API_KEY` — see `env.example.txt`). Without it, the form opens the
+   customer's email app pre-filled — nothing is lost.
+
+## Environment variables
+
+See `env.example.txt`. The Sanity values are required for the CMS; the Resend
+values are optional. All are already set in Vercel for this project.
 
 ## Deploying
 

@@ -41,9 +41,14 @@ export async function POST(req: Request) {
   }
 
   const emailBody = formatOrderEmail(body);
-  const apiKey = process.env.RESEND_API_KEY;
 
-  // No email provider configured yet → acknowledge so the client uses mailto.
+  // 1. Save the order to Sanity so Kami can manage it in the Studio. This is
+  //    best-effort — if Sanity isn't configured yet, we just skip it.
+  await saveOrderToSanity(body);
+
+  // 2. Email Kami (if Resend is configured). Otherwise the client falls back
+  //    to opening the customer's mail app.
+  const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
     console.log("[order] (no email provider configured)\n" + emailBody);
     return NextResponse.json({ ok: true, delivered: false });
@@ -63,5 +68,33 @@ export async function POST(req: Request) {
     console.error("[order] email send failed:", err);
     // Still a success for the user — they'll get the mailto fallback.
     return NextResponse.json({ ok: true, delivered: false });
+  }
+}
+
+async function saveOrderToSanity(body: OrderPayload) {
+  if (!process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || !process.env.SANITY_API_WRITE_TOKEN) {
+    return; // Sanity not set up yet — skip quietly.
+  }
+  try {
+    const { writeClient } = await import("@/sanity/lib/client");
+    await writeClient.create({
+      _type: "order",
+      status: "new",
+      submittedAt: new Date().toISOString(),
+      name: body.name,
+      email: body.email,
+      phone: body.phone,
+      wreath: body.wreath,
+      season: body.season,
+      size: body.size,
+      colors: body.colors,
+      occasion: body.occasion,
+      budget: body.budget,
+      dueDate: body.dueDate,
+      delivery: body.delivery,
+      details: body.details,
+    });
+  } catch (err) {
+    console.error("[order] failed to save to Sanity:", err);
   }
 }

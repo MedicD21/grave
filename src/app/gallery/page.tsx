@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { GalleryGrid } from "@/components/GalleryGrid";
+import { getProducts, getGalleryPhotos } from "@/sanity/lib/queries";
 
 export const metadata: Metadata = {
   title: "Gallery",
@@ -8,7 +9,15 @@ export const metadata: Metadata = {
     "Browse handcrafted memorial and gravestone wreaths by Wreath Whimsy by Kami — spring, summer, fall, winter, Christmas, and everyday tributes.",
 };
 
-export default function GalleryPage() {
+// Refresh gallery content from Sanity at most once a minute.
+export const revalidate = 60;
+
+export default async function GalleryPage() {
+  const [products, photos] = await Promise.all([
+    getProducts(),
+    getGalleryPhotos(),
+  ]);
+
   return (
     <section className="mx-auto max-w-6xl px-5 py-16">
       <div className="mx-auto max-w-2xl text-center">
@@ -24,7 +33,7 @@ export default function GalleryPage() {
       </div>
 
       <div className="mx-auto mt-12 max-w-6xl">
-        <GalleryGrid />
+        <GalleryGrid products={products} photos={photos} />
       </div>
 
       <div className="mt-20 rounded-3xl border border-dashed border-sage/50 bg-cream-deep/40 p-10 text-center">
