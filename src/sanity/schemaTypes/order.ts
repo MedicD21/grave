@@ -164,6 +164,7 @@ export const order = defineType({
         media: createElement(entry.icon, {
           color: entry.color,
           strokeWidth: 1.5,
+          transform: "scale(2)",
         }),
       };
     },
