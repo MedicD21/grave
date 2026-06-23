@@ -20,26 +20,31 @@ export const seasons = [
   "Summer",
   "Fall",
   "Winter",
-  "Holiday / Christmas",
+  "Christmas",
   "Year-round",
   "Not sure yet",
 ];
 
 export const sizes = [
-  'Small (~16")',
-  'Medium (~20")',
-  'Large (~24")',
+  'Small (~16") — saddle / single marker',
+  'Medium (~20") — standard headstone',
+  'Large (~24") — upright monument',
   'Extra large (28"+)',
   "Help me choose",
 ];
 
-export const deliveryOptions = ["Local pickup", "Local delivery", "Shipping"];
+export const deliveryOptions = [
+  "Local pickup",
+  "Local delivery",
+  "Placement at the gravesite",
+  "Shipping",
+];
 
 // Builds a clean, readable email body from an order — reused for the
 // mailto: fallback so orders can reach Kami even before email infra is set up.
 export function formatOrderEmail(o: OrderPayload): string {
   const lines = [
-    "New custom wreath request 🌿",
+    "New memorial wreath request 🌿",
     "",
     `Name: ${o.name}`,
     `Email: ${o.email}`,
@@ -48,8 +53,8 @@ export function formatOrderEmail(o: OrderPayload): string {
     o.wreath ? `Inspired by: ${o.wreath}` : null,
     `Season: ${o.season}`,
     `Size: ${o.size}`,
-    o.colors ? `Colors / theme: ${o.colors}` : null,
-    o.occasion ? `Occasion: ${o.occasion}` : null,
+    o.colors ? `Colors / flowers: ${o.colors}` : null,
+    o.occasion ? `In memory of: ${o.occasion}` : null,
     o.budget ? `Budget: ${o.budget}` : null,
     o.dueDate ? `Needed by: ${o.dueDate}` : null,
     `Delivery: ${o.delivery}`,

@@ -71,11 +71,12 @@ export function OrderForm() {
           ✓
         </div>
         <h2 className="mt-5 font-display text-3xl font-semibold text-ink">
-          Your request is on its way!
+          Your request is on its way
         </h2>
         <p className="mx-auto mt-3 max-w-md text-ink-soft">
-          Thank you so much. Kami will be in touch within {site.responseTime} to
-          talk through the details and pricing. 🌿
+          Thank you for trusting Kami with something so meaningful. She&apos;ll
+          be in touch within {site.responseTime} to talk gently through the
+          details and pricing. 🌿
         </p>
         <button
           onClick={() => setStatus("idle")}
@@ -159,23 +160,23 @@ export function OrderForm() {
 
         <div>
           <label className={labelClass} htmlFor="colors">
-            Colors you love
+            Their favorite colors or flowers
           </label>
           <input
             id="colors"
             name="colors"
-            placeholder="e.g. sage, cream, blush"
+            placeholder="e.g. roses, sage & blush, sunflowers"
             className={fieldClass}
           />
         </div>
         <div>
           <label className={labelClass} htmlFor="occasion">
-            Occasion
+            In memory of
           </label>
           <input
             id="occasion"
             name="occasion"
-            placeholder="e.g. wedding, new baby, front door"
+            placeholder="e.g. a name, or 'my mother'"
             className={fieldClass}
           />
         </div>
@@ -226,7 +227,7 @@ export function OrderForm() {
             id="details"
             name="details"
             rows={4}
-            placeholder="Anything else you're picturing — a vibe, a photo you'll send over, a special meaning…"
+            placeholder="Anything you'd like Kami to know — a photo you'll send over, a special flower they loved, or what this tribute means to you…"
             className={`${fieldClass} resize-y`}
           />
         </div>

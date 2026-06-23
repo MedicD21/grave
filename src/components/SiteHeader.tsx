@@ -41,7 +41,7 @@ export function SiteHeader() {
             href="/order"
             className="rounded-full bg-sage-deep px-5 py-2 text-sm font-medium text-cream shadow-sm transition-all hover:bg-ink hover:shadow-md"
           >
-            Order a Wreath
+            Order a Tribute
           </Link>
         </nav>
 

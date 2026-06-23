@@ -13,11 +13,12 @@ export default function ContactPage() {
       <div className="text-center">
         <p className="eyebrow text-base">Say hello</p>
         <h1 className="mt-2 font-display text-5xl font-semibold text-ink">
-          Let&apos;s chat wreaths
+          We&apos;re here to help
         </h1>
         <p className="mx-auto mt-4 max-w-lg leading-relaxed text-ink-soft">
-          Questions, custom ideas, or just want to talk flowers? Kami would love
-          to hear from you. Expect a reply within {site.responseTime}.
+          Questions, a special request, or simply not sure where to start? Kami
+          would be honored to help you remember someone you love. Expect a warm
+          reply within {site.responseTime}.
         </p>
       </div>
 
@@ -32,7 +33,7 @@ export default function ContactPage() {
           <h2 className="mt-5 font-display text-xl font-semibold text-ink">
             Email
           </h2>
-          <p className="mt-1 text-ink-soft">Best for custom order details.</p>
+          <p className="mt-1 text-ink-soft">Best for memorial wreath details.</p>
           <p className="mt-3 font-medium text-terracotta group-hover:underline">
             {site.email}
           </p>
@@ -61,10 +62,11 @@ export default function ContactPage() {
 
       <div className="mt-10 rounded-3xl border border-dashed border-sage/50 bg-cream-deep/40 p-10 text-center">
         <h2 className="font-display text-2xl font-semibold text-ink">
-          Ready to start a wreath?
+          Ready to begin a tribute?
         </h2>
         <p className="mx-auto mt-2 max-w-md text-ink-soft">
-          The order form walks you through everything Kami needs.
+          The order form walks you through everything Kami needs, at your own
+          pace.
         </p>
         <Link
           href="/order"

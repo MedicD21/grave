@@ -58,11 +58,11 @@ export function SiteFooter() {
 
         <div>
           <h3 className="font-display text-sm font-semibold uppercase tracking-wider text-ink">
-            Custom orders
+            Custom tributes
           </h3>
           <p className="mt-4 text-sm leading-relaxed text-ink-soft">
-            Have something special in mind? Tell Kami your colors, season, and
-            occasion.
+            Have someone special in mind? Tell Kami their favorite colors,
+            flowers, and the season.
           </p>
           <Link
             href="/order"
@@ -78,7 +78,7 @@ export function SiteFooter() {
           <p>
             © {year}–present {site.name}. Handmade with love.
           </p>
-          <p className="eyebrow not-italic">Every wreath tells a little story.</p>
+          <p className="eyebrow not-italic">In loving memory, one stem at a time.</p>
         </div>
       </div>
     </footer>
