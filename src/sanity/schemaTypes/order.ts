@@ -1,4 +1,6 @@
+import { createElement } from "react";
 import { defineField, defineType } from "sanity";
+import { OrderInspirationMedia } from "../components/OrderInspirationMedia";
 
 // Custom order requests submitted through the website's order form.
 // These are created automatically by the /api/order route — Kami doesn't fill
@@ -60,8 +62,14 @@ export const order = defineType({
     },
   ],
   preview: {
-    select: { name: "name", season: "season", status: "status", date: "submittedAt" },
-    prepare({ name, season, status, date }) {
+    select: {
+      name: "name",
+      season: "season",
+      status: "status",
+      date: "submittedAt",
+      wreath: "wreath",
+    },
+    prepare({ name, season, status, date, wreath }) {
       const when = date ? new Date(date).toLocaleDateString() : "";
       const badge =
         status === "new"
@@ -74,6 +82,10 @@ export const order = defineType({
       return {
         title: `${badge} ${name || "Order"}`,
         subtitle: [season, when].filter(Boolean).join(" · "),
+        // Thumbnail of the referenced design, if "Inspired by" matches one.
+        media: wreath
+          ? createElement(OrderInspirationMedia, { wreath })
+          : undefined,
       };
     },
   },
