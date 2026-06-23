@@ -18,7 +18,7 @@ function isValid(body: Partial<OrderPayload>): body is OrderPayload {
   return Boolean(
     body.name?.trim() &&
       body.email?.trim() &&
-      /\S+@\S+\.\S+/.test(body.email) &&
+      /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(body.email.trim()) &&
       body.season &&
       body.size &&
       body.delivery,

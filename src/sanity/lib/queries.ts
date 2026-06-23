@@ -72,7 +72,11 @@ export async function getGalleryPhotos(): Promise<GalleryPhoto[]> {
   try {
     const data = await client.fetch<SanityDesign[]>(GALLERY_QUERY);
     return data.length ? data.map(toDesign) : fallbackDesigns;
-  } catch {
+  } catch (err) {
+    // Sanity is configured but the fetch failed (bad token, network, malformed
+    // query). Log it so a real misconfiguration isn't silently masked by the
+    // static fallback.
+    console.error("[gallery] Sanity fetch failed, using fallback data:", err);
     return fallbackDesigns;
   }
 }

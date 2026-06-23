@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { site } from "@/data/site";
 import {
@@ -23,6 +23,15 @@ export function OrderForm() {
 
   const [status, setStatus] = useState<Status>("idle");
   const [message, setMessage] = useState("");
+  const successHeadingRef = useRef<HTMLHeadingElement>(null);
+  // Today's date (YYYY-MM-DD) so the "Needed by" picker can't select the past.
+  const today = new Date().toISOString().slice(0, 10);
+
+  // Move focus to the confirmation heading when the order succeeds so screen
+  // reader users are told the submission went through.
+  useEffect(() => {
+    if (status === "done") successHeadingRef.current?.focus();
+  }, [status]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -48,12 +57,22 @@ export function OrderForm() {
         return;
       }
 
-      // If the server couldn't auto-email yet, open the customer's mail app so
-      // the order still reaches Kami immediately.
-      if (json.delivered === false) {
+      // The order reached Kami if it was saved to the Studio OR emailed. Only
+      // when neither happened do we fall back to opening the customer's mail
+      // app so the request still gets through.
+      const reachedKami = json.saved === true || json.delivered === true;
+
+      if (!reachedKami) {
         const subject = encodeURIComponent(`Wreath order from ${data.name}`);
         const bodyText = encodeURIComponent(formatOrderEmail(data));
         window.location.href = `mailto:${site.email}?subject=${subject}&body=${bodyText}`;
+        // The mail app draft is the only channel — don't claim success or wipe
+        // the form, since the customer still has to press Send themselves.
+        setStatus("error");
+        setMessage(
+          "We've opened your email app with your request — please press Send so Kami receives it. Your details are still here if you'd rather try again.",
+        );
+        return;
       }
 
       setStatus("done");
@@ -67,10 +86,17 @@ export function OrderForm() {
   if (status === "done") {
     return (
       <div className="rounded-3xl border border-sage/50 bg-cream-deep/40 p-10 text-center">
-        <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-sage-deep text-3xl text-cream">
+        <div
+          aria-hidden
+          className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-sage-deep text-3xl text-cream"
+        >
           ✓
         </div>
-        <h2 className="mt-5 font-display text-3xl font-semibold text-ink">
+        <h2
+          ref={successHeadingRef}
+          tabIndex={-1}
+          className="mt-5 font-display text-3xl font-semibold text-ink outline-none"
+        >
           Your request is on its way
         </h2>
         <p className="mx-auto mt-3 max-w-md text-ink-soft">
@@ -108,7 +134,11 @@ export function OrderForm() {
             id="email"
             name="email"
             type="email"
+            inputMode="email"
+            autoComplete="email"
             required
+            pattern="[^@\s]+@[^@\s]+\.[^@\s]+"
+            title="Enter a valid email address, e.g. name@example.com"
             className={fieldClass}
           />
         </div>
@@ -116,7 +146,14 @@ export function OrderForm() {
           <label className={labelClass} htmlFor="phone">
             Phone <span className="text-ink-soft/60">(optional)</span>
           </label>
-          <input id="phone" name="phone" className={fieldClass} />
+          <input
+            id="phone"
+            name="phone"
+            type="tel"
+            inputMode="tel"
+            autoComplete="tel"
+            className={fieldClass}
+          />
         </div>
         <div>
           <label className={labelClass} htmlFor="wreath">
@@ -196,7 +233,13 @@ export function OrderForm() {
           <label className={labelClass} htmlFor="dueDate">
             Needed by
           </label>
-          <input id="dueDate" name="dueDate" type="date" className={fieldClass} />
+          <input
+            id="dueDate"
+            name="dueDate"
+            type="date"
+            min={today}
+            className={fieldClass}
+          />
         </div>
 
         <div className="sm:col-span-2">
@@ -234,7 +277,10 @@ export function OrderForm() {
       </div>
 
       {status === "error" && (
-        <p className="mt-4 rounded-xl bg-terracotta/10 px-4 py-3 text-sm text-terracotta">
+        <p
+          role="alert"
+          className="mt-4 rounded-xl bg-terracotta/10 px-4 py-3 text-sm text-terracotta"
+        >
           {message}
         </p>
       )}

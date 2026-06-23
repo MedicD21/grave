@@ -51,6 +51,7 @@ export function SiteHeader() {
           className="grid h-10 w-10 place-items-center rounded-full border border-line text-ink md:hidden"
           aria-label="Toggle menu"
           aria-expanded={open}
+          aria-controls="mobile-menu"
         >
           <span className="text-lg">{open ? "✕" : "☰"}</span>
         </button>
@@ -58,7 +59,10 @@ export function SiteHeader() {
 
       {/* Mobile menu */}
       {open && (
-        <nav className="flex flex-col gap-1 border-t border-line px-5 pb-4 pt-2 md:hidden">
+        <nav
+          id="mobile-menu"
+          className="flex flex-col gap-1 border-t border-line px-5 pb-4 pt-2 md:hidden"
+        >
           {nav.map((item) => (
             <Link
               key={item.href}
@@ -69,6 +73,13 @@ export function SiteHeader() {
               {item.label}
             </Link>
           ))}
+          <Link
+            href="/order"
+            onClick={() => setOpen(false)}
+            className="mt-2 rounded-full bg-sage-deep px-5 py-2.5 text-center text-sm font-medium text-cream shadow-sm transition-all hover:bg-ink"
+          >
+            Order a Tribute
+          </Link>
         </nav>
       )}
     </header>
