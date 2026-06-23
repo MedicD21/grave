@@ -13,7 +13,16 @@ export function GalleryGrid({ designs = [] }: { designs?: GalleryPhoto[] }) {
       ? designs
       : designs.filter((d) => d.category === active);
 
-  const chips = ["All", ...categories];
+  // Known categories first (in their defined order), then any custom ones Kami
+  // has typed on a design that aren't in the standard list — so new categories
+  // show up as filter chips automatically.
+  const usedCategories = designs
+    .map((d) => d.category)
+    .filter((c): c is string => Boolean(c));
+  const customCategories = [...new Set(usedCategories)].filter(
+    (c) => !categories.includes(c as (typeof categories)[number]),
+  );
+  const chips = ["All", ...categories, ...customCategories];
 
   return (
     <>
