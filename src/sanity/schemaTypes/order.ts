@@ -1,6 +1,25 @@
 import { createElement } from "react";
 import { defineField, defineType } from "sanity";
-import { OrderInspirationMedia } from "../components/OrderInspirationMedia";
+import {
+  Zap,
+  MessageCircle,
+  Tool,
+  CheckCircle,
+  Archive,
+} from "@deemlol/next-icons";
+
+// Colored status icon shown as the order's thumbnail in the list, so Kami can
+// scan order states at a glance.
+const STATUS_ICON: Record<
+  string,
+  { icon: typeof Zap; color: string }
+> = {
+  new: { icon: Zap, color: "#FFC000" },
+  contacted: { icon: MessageCircle, color: "#3b82f6" },
+  in_progress: { icon: Tool, color: "#ec4899" },
+  completed: { icon: CheckCircle, color: "#bffb4f" },
+  archived: { icon: Archive, color: "#ef4444" },
+};
 
 // Custom order requests submitted through the website's order form.
 // These are created automatically by the /api/order route — Kami doesn't fill
@@ -27,6 +46,14 @@ export const order = defineType({
         layout: "radio",
       },
       initialValue: "new",
+    }),
+    defineField({
+      name: "paymentCollected",
+      title: "Payment collected?",
+      type: "boolean",
+      description:
+        "Turn on once payment has been received — tracked separately from the order's status.",
+      initialValue: false,
     }),
     defineField({ name: "name", title: "Customer name", type: "string", readOnly: true }),
     defineField({ name: "email", title: "Email", type: "string", readOnly: true }),
@@ -67,25 +94,19 @@ export const order = defineType({
       season: "season",
       status: "status",
       date: "submittedAt",
-      wreath: "wreath",
+      paid: "paymentCollected",
     },
-    prepare({ name, season, status, date, wreath }) {
+    prepare({ name, season, status, date, paid }) {
       const when = date ? new Date(date).toLocaleDateString() : "";
-      const badge =
-        status === "new"
-          ? "🆕"
-          : status === "completed"
-            ? "✅"
-            : status === "archived"
-              ? "🗂️"
-              : "💬";
+      const entry = STATUS_ICON[status as string] ?? STATUS_ICON.new;
       return {
-        title: `${badge} ${name || "Order"}`,
+        title: `${name || "Order"}${paid ? " · paid" : ""}`,
         subtitle: [season, when].filter(Boolean).join(" · "),
-        // Thumbnail of the referenced design, if "Inspired by" matches one.
-        media: wreath
-          ? createElement(OrderInspirationMedia, { wreath })
-          : undefined,
+        // Colored status icon as the list thumbnail for at-a-glance sorting.
+        media: createElement(entry.icon, {
+          color: entry.color,
+          strokeWidth: 1.5,
+        }),
       };
     },
   },
