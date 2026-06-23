@@ -24,11 +24,12 @@ export default defineConfig({
           .title("Wreath Whimsy")
           .items([
             S.listItem()
-              .title("🌿 Wreaths")
-              .child(S.documentTypeList("product").title("Wreaths")),
-            S.listItem()
-              .title("🖼️ Gallery photos")
-              .child(S.documentTypeList("galleryImage").title("Gallery photos")),
+              .title("🌿 Wreaths & gallery designs")
+              .child(
+                S.documentTypeList("galleryImage").title(
+                  "Wreaths & gallery designs",
+                ),
+              ),
             S.listItem()
               .title("✉️ Order requests")
               .child(

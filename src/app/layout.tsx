@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import { Fraunces, Newsreader } from "next/font/google";
 import "./globals.css";
 import { site } from "@/data/site";
-import { SiteHeader } from "@/components/SiteHeader";
-import { SiteFooter } from "@/components/SiteFooter";
 
 const fraunces = Fraunces({
   subsets: ["latin"],
@@ -35,12 +33,8 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body
-        className={`${fraunces.variable} ${newsreader.variable} min-h-screen flex flex-col`}
-      >
-        <SiteHeader />
-        <main className="flex-1">{children}</main>
-        <SiteFooter />
+      <body className={`${fraunces.variable} ${newsreader.variable}`}>
+        {children}
       </body>
     </html>
   );
