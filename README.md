@@ -1,36 +1,66 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Wreath Whimsy by Kami 🌿
 
-## Getting Started
+A warm, handcrafted website for a custom wreath-making business — built with
+**Next.js 16** (App Router) + **TypeScript** + **Tailwind CSS v4**.
 
-First, run the development server:
+## What's inside
+
+- **Home** — hero, featured wreaths, "how it works", and a meet-the-maker section.
+- **Gallery** (`/gallery`) — filterable grid of wreaths by season/category.
+- **Order Custom** (`/order`) — a friendly order form that emails Kami.
+- **Contact** (`/contact`) — email + Facebook.
+
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev      # http://localhost:3000
+npm run build    # production build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Adding a new wreath (no coding required for the data)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Everything lives in [`src/data/products.ts`](src/data/products.ts). To add a wreath:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Drop a photo into `public/wreaths/` (e.g. `public/wreaths/spring-tulip.jpg`).
+2. Copy an existing entry in `products.ts`, give it a unique `id`, write a name
+   and description, and set `image: "/wreaths/spring-tulip.jpg"`.
+3. Set `featured: true` to also show it on the home page.
 
-## Learn More
+That's it — it appears in the gallery and filters automatically. Categories are
+defined at the top of the same file; add new ones freely.
 
-To learn more about Next.js, take a look at the following resources:
+## Editing contact info & copy
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Global info (name, email, Facebook link, tagline) lives in
+[`src/data/site.ts`](src/data/site.ts).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Replacing the logo
 
-## Deploy on Vercel
+A placeholder wreath mark is used everywhere via
+[`src/components/Logo.tsx`](src/components/Logo.tsx). When the official logo is
+ready, drop the image into `public/` (e.g. `public/logo.png`) and follow the
+comment at the top of that file to swap it in. One change updates the header,
+footer, and everywhere else.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Receiving orders by email
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Orders are sent through `src/app/api/order/route.ts`.
+
+- **Without setup:** the form opens the customer's email app pre-filled to Kami —
+  nothing is lost.
+- **Automatic emails:** create a free [Resend](https://resend.com) account and
+  add a `.env.local` file (see `env.example.txt`) with your `RESEND_API_KEY`.
+
+## Deploying
+
+Optimized for **Vercel**: push to GitHub and import the repo, or run `vercel`.
+Add `RESEND_API_KEY` in the Vercel project's Environment Variables to enable
+automatic order emails in production.
+
+## Ideas for later
+
+- Wreath detail pages with multiple photos.
+- Customer reviews / testimonials.
+- Online payment & deposits (Stripe).
+- An Instagram feed embed.

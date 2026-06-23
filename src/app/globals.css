@@ -1,26 +1,131 @@
 @import "tailwindcss";
 
+/* ── Wreath Whimsy theme ──────────────────────────────────────────────────
+   Whimsical botanical: warm cream canvas, sage + terracotta + dusty rose.
+   Display serif (Fraunces) for character, Newsreader for readable body. */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --cream: #faf6ee;
+  --cream-deep: #f3ebdc;
+  --ink: #2f3b30;
+  --ink-soft: #56624f;
+  --sage: #7c8f6a;
+  --sage-deep: #5f7150;
+  --terracotta: #c66b4c;
+  --rose: #d99a8f;
+  --gold: #d9a441;
+  --line: #e3dac9;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-cream: var(--cream);
+  --color-cream-deep: var(--cream-deep);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-sage: var(--sage);
+  --color-sage-deep: var(--sage-deep);
+  --color-terracotta: var(--terracotta);
+  --color-rose: var(--rose);
+  --color-gold: var(--gold);
+  --color-line: var(--line);
+
+  --font-display: var(--font-fraunces);
+  --font-body: var(--font-newsreader);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  border-color: var(--line);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--cream);
+  color: var(--ink);
+  font-family: var(--font-newsreader), Georgia, serif;
+  -webkit-font-smoothing: antialiased;
+  /* Soft organic dotted texture for warmth */
+  background-image: radial-gradient(var(--cream-deep) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+h1,
+h2,
+h3,
+.font-display {
+  font-family: var(--font-fraunces), Georgia, serif;
+}
+
+/* Hand-letter feel for small eyebrow labels */
+.eyebrow {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-style: italic;
+  letter-spacing: 0.02em;
+  color: var(--terracotta);
+}
+
+/* ── Animations ─────────────────────────────────────────────────────────── */
+@keyframes float-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes sway {
+  0%,
+  100% {
+    transform: rotate(-2.5deg);
+  }
+  50% {
+    transform: rotate(2.5deg);
+  }
+}
+
+@keyframes spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-float-in {
+  opacity: 0;
+  animation: float-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.animate-sway {
+  animation: sway 6s ease-in-out infinite;
+  transform-origin: top center;
+}
+
+.animate-spin-slow {
+  animation: spin-slow 40s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* Decorative dashed leaf divider */
+.leaf-rule {
+  height: 1px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--line) 0,
+    var(--line) 10px,
+    transparent 10px,
+    transparent 18px
+  );
+}
+
+::selection {
+  background: var(--rose);
+  color: var(--cream);
 }
