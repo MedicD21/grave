@@ -15,6 +15,8 @@ const sanityConfigured = Boolean(process.env.NEXT_PUBLIC_SANITY_PROJECT_ID);
 export type GalleryPhoto = {
   id: string;
   url?: string;
+  // Responsive variants for <img srcset> so phones don't fetch the full image.
+  srcSet?: string;
   title?: string;
   caption?: string;
   category?: string;
@@ -51,11 +53,26 @@ type SanityDesign = {
   featured?: boolean;
 };
 
+// Build an optimized square Sanity image URL at a given width.
+function squareImageUrl(image: SanityDesign["image"], size: number) {
+  return urlForImage(image!)
+    .width(size)
+    .height(size)
+    .fit("crop")
+    .auto("format") // serve WebP/AVIF to browsers that support it
+    .quality(75)
+    .url();
+}
+
 function toDesign(d: SanityDesign): GalleryPhoto {
+  const hasImage = Boolean(d.image?.asset?._ref);
   return {
     id: d._id,
-    url: d.image?.asset?._ref
-      ? urlForImage(d.image).width(800).height(800).fit("crop").url()
+    url: hasImage ? squareImageUrl(d.image, 800) : undefined,
+    srcSet: hasImage
+      ? [400, 600, 800]
+          .map((w) => `${squareImageUrl(d.image, w)} ${w}w`)
+          .join(", ")
       : undefined,
     title: d.title,
     caption: d.caption,
@@ -87,4 +104,55 @@ export async function getFeaturedDesigns(): Promise<GalleryPhoto[]> {
   const all = await getGalleryPhotos();
   const featured = all.filter((d) => d.featured);
   return featured.length ? featured : all.slice(0, 3);
+}
+
+// ── Testimonials ───────────────────────────────────────────────────────────
+export type Testimonial = {
+  id: string;
+  quote: string;
+  author: string;
+  location?: string;
+};
+
+const TESTIMONIALS_QUERY = groq`*[_type == "testimonial" && featured == true] | order(order asc){
+  _id, quote, author, location
+}`;
+
+export async function getTestimonials(): Promise<Testimonial[]> {
+  if (!sanityConfigured) return [];
+  try {
+    const data = await client.fetch<
+      { _id: string; quote: string; author: string; location?: string }[]
+    >(TESTIMONIALS_QUERY);
+    return data.map((t) => ({
+      id: t._id,
+      quote: t.quote,
+      author: t.author,
+      location: t.location,
+    }));
+  } catch (err) {
+    console.error("[testimonials] Sanity fetch failed:", err);
+    return [];
+  }
+}
+
+// ── Site settings (announcement banner) ────────────────────────────────────
+export type SiteSettings = {
+  bannerEnabled: boolean;
+  bannerText?: string;
+};
+
+const SETTINGS_QUERY = groq`*[_type == "siteSettings"][0]{
+  bannerEnabled, bannerText
+}`;
+
+export async function getSiteSettings(): Promise<SiteSettings> {
+  if (!sanityConfigured) return { bannerEnabled: false };
+  try {
+    const data = await client.fetch<SiteSettings | null>(SETTINGS_QUERY);
+    return data ?? { bannerEnabled: false };
+  } catch (err) {
+    console.error("[settings] Sanity fetch failed:", err);
+    return { bannerEnabled: false };
+  }
 }

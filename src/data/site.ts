@@ -10,6 +10,9 @@ export const site = {
     "Handcrafted memorial wreaths, made to honor the ones we hold close.",
   description:
     "Custom, handmade gravestone and memorial wreaths — thoughtfully created one stem at a time by Kami to keep a loved one's memory beautiful through every season.",
+  // Canonical production URL (no trailing slash). Update when a custom domain
+  // is added. Used for SEO metadata, the sitemap, and social-share previews.
+  url: "https://grave-khaki.vercel.app",
   email: "wreath.whimsy2024@gmail.com",
   facebook: "https://www.facebook.com/profile.php?id=61571279514211",
   // Set to a real Instagram/TikTok later, or leave empty to hide.

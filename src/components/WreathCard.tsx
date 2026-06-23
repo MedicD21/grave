@@ -28,7 +28,10 @@ export function WreathCard({ design }: { design: GalleryPhoto }) {
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={design.url}
+            srcSet={design.srcSet}
+            sizes="(min-width: 1024px) 400px, (min-width: 640px) 50vw, 100vw"
             alt={heading || "Wreath by Kami"}
+            loading="lazy"
             className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
           />
         ) : (

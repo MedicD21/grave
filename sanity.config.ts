@@ -37,6 +37,17 @@ export default defineConfig({
                   .title("Order requests")
                   .defaultOrdering([{ field: "submittedAt", direction: "desc" }]),
               ),
+            S.listItem()
+              .title("💬 Testimonials")
+              .child(S.documentTypeList("testimonial").title("Testimonials")),
+            // Singleton — one settings document, edited directly.
+            S.listItem()
+              .title("⚙️ Site settings")
+              .child(
+                S.document()
+                  .schemaType("siteSettings")
+                  .documentId("siteSettings"),
+              ),
           ]),
     }),
     // Vision lets you test queries — handy for developers, harmless for Kami.

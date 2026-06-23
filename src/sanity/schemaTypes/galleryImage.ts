@@ -1,5 +1,5 @@
 import { defineField, defineType } from "sanity";
-import { categories } from "@/data/products";
+import { CategoryInput } from "../components/CategoryInput";
 
 // A wreath / gallery design — every piece Kami shows off lives here, whether
 // it's a past creation or a design someone can order. Upload a photo, name it,
@@ -53,11 +53,10 @@ export const galleryImage = defineType({
       title: "Category",
       type: "string",
       description:
-        "Pick an existing category or type a brand-new one — new categories are added automatically and will show up as a gallery filter.",
-      // Suggestions only — not strict, so Kami can also type a new category.
-      options: {
-        list: [...categories],
-      },
+        "Pick an existing category or type a brand-new one — new categories show up as a gallery filter automatically.",
+      // Custom input allows typing a new value (the built-in dropdown is
+      // pick-only). Suggestions come from the known categories.
+      components: { input: CategoryInput },
     }),
     defineField({
       name: "featured",

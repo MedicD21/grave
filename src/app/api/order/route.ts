@@ -13,6 +13,21 @@ import { formatOrderEmail, type OrderPayload } from "@/lib/order";
 //   1. Create a free account at resend.com and verify a sending domain.
 //   2. Add to .env.local:  RESEND_API_KEY=re_xxxxxxxx
 //   3. (Optional) ORDER_FROM_EMAIL="orders@yourdomain.com"
+//
+// ⚠️ SENDER (`from`) ADDRESS — current status:
+//   Resend can only send FROM an address on a domain it has verified. It will
+//   NOT send from a gmail.com (or other free-provider) address.
+//   - If ORDER_FROM_EMAIL is a gmail.com address, the send will FAIL (the order
+//     still saves to Sanity and the form falls back to mailto — nothing lost).
+//   - To send today with NO DNS: leave ORDER_FROM_EMAIL unset so it falls back
+//     to onboarding@resend.dev (only delivers to the email on the Resend
+//     account — which is fine here since Kami's Gmail is the sole recipient).
+//   WHEN A DOMAIN IS READY:
+//     1. Verify the domain in Resend; it provides SPF/DKIM records.
+//     2. Add those records in Vercel → Domains → DNS (or the registrar).
+//     3. Set ORDER_FROM_EMAIL="orders@thatdomain.com" in Vercel env vars.
+//   The recipient (`to`) is site.email (Kami's Gmail) and replyTo is the
+//   customer, so Kami just hits Reply — that part needs no DNS.
 
 function isValid(body: Partial<OrderPayload>): body is OrderPayload {
   return Boolean(

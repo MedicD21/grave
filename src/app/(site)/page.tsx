@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { site } from "@/data/site";
-import { getFeaturedDesigns } from "@/sanity/lib/queries";
+import { getFeaturedDesigns, getTestimonials } from "@/sanity/lib/queries";
 import { WreathCard } from "@/components/WreathCard";
 
 // Re-fetch from Sanity at most once a minute so new wreaths appear without a
@@ -9,7 +9,10 @@ import { WreathCard } from "@/components/WreathCard";
 export const revalidate = 60;
 
 export default async function Home() {
-  const featuredDesigns = await getFeaturedDesigns();
+  const [featuredDesigns, testimonials] = await Promise.all([
+    getFeaturedDesigns(),
+    getTestimonials(),
+  ]);
   return (
     <>
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
@@ -172,6 +175,42 @@ export default async function Home() {
           </div>
         </div>
       </section>
+
+      {/* ── Testimonials ─────────────────────────────────────────────────── */}
+      {testimonials.length > 0 && (
+        <section className='bg-cream-deep/50 py-20'>
+          <div className='mx-auto max-w-5xl px-5'>
+            <p className='eyebrow text-center text-base'>Kind words</p>
+            <h2 className='mt-1 text-center font-display text-4xl font-semibold text-ink'>
+              From families we&apos;ve served
+            </h2>
+            <div className='mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3'>
+              {testimonials.map((t) => (
+                <figure
+                  key={t.id}
+                  className='flex flex-col rounded-3xl border border-line bg-cream p-6 shadow-sm'
+                >
+                  <span aria-hidden className='font-display text-4xl text-terracotta/40'>
+                    &ldquo;
+                  </span>
+                  <blockquote className='-mt-2 flex-1 leading-relaxed text-ink-soft'>
+                    {t.quote}
+                  </blockquote>
+                  <figcaption className='mt-4 text-sm font-medium text-ink'>
+                    {t.author}
+                    {t.location && (
+                      <span className='font-normal text-ink-soft'>
+                        {" "}
+                        · {t.location}
+                      </span>
+                    )}
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ── About / meet Kami ────────────────────────────────────────────── */}
       <section className='mx-auto max-w-5xl px-5 py-20'>
