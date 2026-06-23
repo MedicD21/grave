@@ -1,29 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { categories, type Product } from "@/data/products";
+import { categories } from "@/data/products";
 import type { GalleryPhoto } from "@/sanity/lib/queries";
 import { WreathCard } from "./WreathCard";
 
-export function GalleryGrid({
-  products,
-  photos = [],
-}: {
-  products: Product[];
-  photos?: GalleryPhoto[];
-}) {
+export function GalleryGrid({ designs = [] }: { designs?: GalleryPhoto[] }) {
   const [active, setActive] = useState<string>("All");
 
-  const filteredProducts =
+  const filtered =
     active === "All"
-      ? products
-      : products.filter((p) => p.category === active);
-
-  const filteredPhotos =
-    active === "All" ? photos : photos.filter((p) => p.category === active);
+      ? designs
+      : designs.filter((d) => d.category === active);
 
   const chips = ["All", ...categories];
-  const isEmpty = filteredProducts.length === 0 && filteredPhotos.length === 0;
 
   return (
     <>
@@ -46,38 +36,28 @@ export function GalleryGrid({
         })}
       </div>
 
-      {isEmpty ? (
+      {filtered.length === 0 ? (
         <p className="mt-16 text-center text-ink-soft">
           No wreaths in this category yet — check back soon. 🌿
         </p>
       ) : (
         <div className="mt-12 grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
-          {filteredProducts.map((p) => (
-            <WreathCard key={p.id} product={p} />
-          ))}
-
-          {/* Gallery-only photos (no price / order link) */}
-          {filteredPhotos.map((photo) => (
-            <figure
-              key={photo.id}
-              className="group overflow-hidden rounded-3xl border border-line bg-cream shadow-sm"
-            >
-              <div className="aspect-square overflow-hidden">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={photo.url}
-                  alt={photo.caption || "Wreath by Kami"}
-                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                />
-              </div>
-              {photo.caption && (
-                <figcaption className="p-5 text-sm leading-relaxed text-ink-soft">
-                  {photo.caption}
-                </figcaption>
-              )}
-            </figure>
+          {filtered.map((d) => (
+            <WreathCard key={d.id} design={d} />
           ))}
         </div>
+      )}
+
+      {/* Pricing disclaimer — shown whenever any orderable, priced item is visible */}
+      {filtered.some((d) => d.orderable && d.priceFrom != null) && (
+        <p className="mx-auto mt-10 max-w-2xl text-center text-xs leading-relaxed text-ink-soft/80">
+          Prices marked &ldquo;from&rdquo; are starting estimates for a standard
+          version of a design. Because every wreath is handmade to order,
+          customizations, size changes, premium materials, and seasonal
+          availability may affect the final price. Any such adjustments will be
+          discussed and confirmed with you before your order is finalized. No
+          payment is due until pricing is agreed upon.
+        </p>
       )}
     </>
   );

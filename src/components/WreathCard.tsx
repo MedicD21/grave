@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { Product } from "@/data/products";
+import type { GalleryPhoto } from "@/sanity/lib/queries";
 
 // Deterministic soft gradient per category so placeholder cards still feel
 // intentional and varied before real photos are added.
@@ -13,23 +13,28 @@ const categoryTint: Record<string, string> = {
   "In Memoriam": "from-rose/30 to-gold/20",
 };
 
-export function WreathCard({ product }: { product: Product }) {
-  const tint = categoryTint[product.category] ?? "from-sage/20 to-rose/20";
+// One card for every wreath / gallery design. Shows the photo (or a tasteful
+// placeholder), a heading, description, and — when the design is orderable —
+// a "from $" price and an "Order this" link that starts a custom order.
+export function WreathCard({ design }: { design: GalleryPhoto }) {
+  const tint = categoryTint[design.category ?? ""] ?? "from-sage/20 to-rose/20";
+  const heading = design.title || design.caption;
+  const inspiredBy = design.title || design.caption;
 
   return (
     <article className="group relative flex flex-col overflow-hidden rounded-3xl border border-line bg-cream shadow-sm transition-all duration-500 hover:-translate-y-1 hover:shadow-xl">
       <div className="relative aspect-square overflow-hidden">
-        {product.image ? (
+        {design.url ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={product.image}
-            alt={product.name}
+            src={design.url}
+            alt={heading || "Wreath by Kami"}
             className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
           />
         ) : (
-          // Placeholder until a real photo is dropped into /public/wreaths
+          // Placeholder until a real photo is added
           <div
-            className={`flex h-full w-full items-center justify-center bg-gradient-to-br ${tint}`}
+            className={`flex h-full w-full items-center justify-center bg-linear-to-br ${tint}`}
           >
             <span
               aria-hidden
@@ -39,34 +44,45 @@ export function WreathCard({ product }: { product: Product }) {
             </span>
           </div>
         )}
-        <span className="absolute left-4 top-4 rounded-full bg-cream/90 px-3 py-1 text-xs font-medium text-sage-deep backdrop-blur">
-          {product.category}
-        </span>
+        {design.category && (
+          <span className="absolute left-4 top-4 rounded-full bg-cream/90 px-3 py-1 text-xs font-medium text-sage-deep backdrop-blur">
+            {design.category}
+          </span>
+        )}
       </div>
 
       <div className="flex flex-1 flex-col p-5">
-        <h3 className="font-display text-lg font-semibold text-ink">
-          {product.name}
-        </h3>
-        <p className="mt-2 flex-1 text-sm leading-relaxed text-ink-soft">
-          {product.description}
-        </p>
-        <div className="mt-4 flex items-center justify-between">
-          {product.priceFrom != null && (
-            <span className="text-sm text-ink-soft">
-              from{" "}
-              <span className="font-display text-base text-terracotta">
-                ${product.priceFrom}
+        {heading && (
+          <h3 className="font-display text-lg font-semibold text-ink">
+            {heading}
+          </h3>
+        )}
+        {design.title && design.caption && (
+          <p className="mt-2 flex-1 text-sm leading-relaxed text-ink-soft">
+            {design.caption}
+          </p>
+        )}
+        {design.orderable && (
+          <div className="mt-4 flex items-center justify-between">
+            {design.priceFrom != null && (
+              <span className="text-sm text-ink-soft">
+                from{" "}
+                <span className="font-display text-base text-terracotta">
+                  ${design.priceFrom}
+                </span>
               </span>
-            </span>
-          )}
-          <Link
-            href={{ pathname: "/order", query: { wreath: product.name } }}
-            className="text-sm font-medium text-sage-deep underline decoration-dotted underline-offset-4 hover:text-terracotta"
-          >
-            Order this →
-          </Link>
-        </div>
+            )}
+            <Link
+              href={{
+                pathname: "/order",
+                query: inspiredBy ? { wreath: inspiredBy } : undefined,
+              }}
+              className="text-sm font-medium text-sage-deep underline decoration-dotted underline-offset-4 hover:text-terracotta"
+            >
+              Order this →
+            </Link>
+          </div>
+        )}
       </div>
     </article>
   );

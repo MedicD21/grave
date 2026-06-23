@@ -251,6 +251,15 @@ export function OrderForm() {
           No payment now — Kami confirms details &amp; pricing first.
         </p>
       </div>
+
+      <p className="mt-5 text-xs leading-relaxed text-ink-soft/80">
+        Any prices marked &ldquo;from&rdquo; are starting estimates for a
+        standard version of a design. Because every wreath is handmade to order,
+        customizations, size changes, premium materials, and seasonal
+        availability may affect the final price. Any such adjustments will be
+        discussed and confirmed with you before your order is finalized. No
+        payment is due until pricing is agreed upon.
+      </p>
     </form>
   );
 }

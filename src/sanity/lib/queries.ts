@@ -1,90 +1,86 @@
 import { groq } from "next-sanity";
 import { client } from "./client";
 import { urlForImage } from "./image";
-import type { Product } from "@/data/products";
 import { products as fallbackProducts } from "@/data/products";
 
 // ── Data access ───────────────────────────────────────────────────────────
-// The public site reads wreaths from Sanity. If Sanity isn't configured yet
-// (no project id), we gracefully fall back to the static products.ts list so
-// the site never breaks during setup.
+// The public site reads every wreath / gallery design from a single Sanity
+// type (galleryImage). If Sanity isn't configured yet (no project id), we
+// gracefully fall back to the static products.ts list so the site never breaks
+// during setup.
 
 const sanityConfigured = Boolean(process.env.NEXT_PUBLIC_SANITY_PROJECT_ID);
 
-type SanityProduct = {
-  _id: string;
-  name: string;
-  slug?: string;
-  image?: { asset?: { _ref?: string } };
-  category: Product["category"];
-  description: string;
+// A wreath / gallery design, as the site renders it.
+export type GalleryPhoto = {
+  id: string;
+  url?: string;
+  title?: string;
+  caption?: string;
+  category?: string;
+  orderable?: boolean;
   priceFrom?: number;
   featured?: boolean;
 };
 
-const PRODUCTS_QUERY = groq`*[_type == "product"] | order(order asc, name asc){
-  _id, name, "slug": slug.current, image, category, description, priceFrom, featured
+// Static fallback, mapped from the legacy products.ts list into the unified
+// shape so empty/unconfigured states still look intentional.
+const fallbackDesigns: GalleryPhoto[] = fallbackProducts.map((p) => ({
+  id: p.id,
+  url: p.image,
+  title: p.name,
+  caption: p.description,
+  category: p.category,
+  orderable: true,
+  priceFrom: p.priceFrom,
+  featured: p.featured,
+}));
+
+const GALLERY_QUERY = groq`*[_type == "galleryImage"] | order(order asc){
+  _id, image, title, caption, category, orderable, priceFrom, featured
 }`;
 
-function toProduct(p: SanityProduct): Product {
+type SanityDesign = {
+  _id: string;
+  image?: { asset?: { _ref?: string } };
+  title?: string;
+  caption?: string;
+  category?: string;
+  orderable?: boolean;
+  priceFrom?: number;
+  featured?: boolean;
+};
+
+function toDesign(d: SanityDesign): GalleryPhoto {
   return {
-    id: p.slug || p._id,
-    name: p.name,
-    category: p.category,
-    description: p.description,
-    priceFrom: p.priceFrom,
-    featured: p.featured,
-    image: p.image?.asset?._ref
-      ? urlForImage(p.image).width(800).height(800).fit("crop").url()
+    id: d._id,
+    url: d.image?.asset?._ref
+      ? urlForImage(d.image).width(800).height(800).fit("crop").url()
       : undefined,
+    title: d.title,
+    caption: d.caption,
+    category: d.category,
+    orderable: d.orderable,
+    priceFrom: d.priceFrom,
+    featured: d.featured,
   };
 }
 
-export async function getProducts(): Promise<Product[]> {
-  if (!sanityConfigured) return fallbackProducts;
-  try {
-    const data = await client.fetch<SanityProduct[]>(PRODUCTS_QUERY);
-    return data.length ? data.map(toProduct) : fallbackProducts;
-  } catch {
-    return fallbackProducts;
-  }
-}
-
-export async function getFeaturedProducts(): Promise<Product[]> {
-  const all = await getProducts();
-  const featured = all.filter((p) => p.featured);
-  // If nothing is flagged featured yet, show the first few so the home page
-  // never looks empty.
-  return featured.length ? featured : all.slice(0, 3);
-}
-
-// ── Gallery photos ────────────────────────────────────────────────────────
-export type GalleryPhoto = {
-  id: string;
-  url: string;
-  caption?: string;
-  category?: string;
-};
-
-const GALLERY_QUERY = groq`*[_type == "galleryImage"] | order(order asc){
-  _id, image, caption, category
-}`;
-
+// Every design, in sort order. Used by the gallery.
 export async function getGalleryPhotos(): Promise<GalleryPhoto[]> {
-  if (!sanityConfigured) return [];
+  if (!sanityConfigured) return fallbackDesigns;
   try {
-    const data = await client.fetch<
-      { _id: string; image: { asset?: { _ref?: string } }; caption?: string; category?: string }[]
-    >(GALLERY_QUERY);
-    return data
-      .filter((d) => d.image?.asset?._ref)
-      .map((d) => ({
-        id: d._id,
-        url: urlForImage(d.image).width(800).height(800).fit("crop").url(),
-        caption: d.caption,
-        category: d.category,
-      }));
+    const data = await client.fetch<SanityDesign[]>(GALLERY_QUERY);
+    return data.length ? data.map(toDesign) : fallbackDesigns;
   } catch {
-    return [];
+    return fallbackDesigns;
   }
+}
+
+// The subset flagged to feature on the home page. Falls back to the first few
+// so the home page never looks empty.
+export async function getFeaturedDesigns(): Promise<GalleryPhoto[]> {
+  const all = await getGalleryPhotos();
+  const featured = all.filter((d) => d.featured);
+  return featured.length ? featured : all.slice(0, 3);
 }

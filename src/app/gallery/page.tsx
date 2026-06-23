@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { GalleryGrid } from "@/components/GalleryGrid";
-import { getProducts, getGalleryPhotos } from "@/sanity/lib/queries";
+import { getGalleryPhotos } from "@/sanity/lib/queries";
 
 export const metadata: Metadata = {
   title: "Gallery",
@@ -13,10 +13,7 @@ export const metadata: Metadata = {
 export const revalidate = 60;
 
 export default async function GalleryPage() {
-  const [products, photos] = await Promise.all([
-    getProducts(),
-    getGalleryPhotos(),
-  ]);
+  const designs = await getGalleryPhotos();
 
   return (
     <section className="mx-auto max-w-6xl px-5 py-16">
@@ -33,7 +30,7 @@ export default async function GalleryPage() {
       </div>
 
       <div className="mx-auto mt-12 max-w-6xl">
-        <GalleryGrid products={products} photos={photos} />
+        <GalleryGrid designs={designs} />
       </div>
 
       <div className="mt-20 rounded-3xl border border-dashed border-sage/50 bg-cream-deep/40 p-10 text-center">
